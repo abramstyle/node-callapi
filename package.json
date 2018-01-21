@@ -1,0 +1,28 @@
+{
+  "name": "node-callapi",
+  "version": "1.1.1",
+  "description": "Making api call with node-fetch, with middleware.",
+  "main": "index.js",
+  "repository": "https://github.com/abramstyle/node-callapi",
+  "author": "Abram.Zhao",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "@abramstyle/utils": "^0.8.4",
+    "form-data": "^2.3.1",
+    "mime-types": "^2.1.17",
+    "node-fetch": "^1.7.3"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.0.1",
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^4.9.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "jest": "^21.2.1",
+    "nock": "^9.1.0",
+    "webpack": "^3.8.1"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "extends": "airbnb-base",
+  "parser": "babel-eslint",
+  "rules": {
+    "strict": 0,
+    "max-len": ["error", 200, 4, {"ignoreUrls": true, "ignoreStrings": true ,"ignoreTemplateLiterals": true}],
+    "global-require": 0,
+    "no-param-reassign": 0,
+    "class-methods-use-this": 0,
+    "generator-star-spacing": 0,
+    "no-underscore-dangle": ["error", { "allow": ["__DEV__", "__PROD__", "__RELEASE__", "__STAGING__", "__PRELOADED_STATE__"] }]
+  },
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "globals": {
+    "__DEV__": true,
+    "__PROD__": true,
+    "__RELEASE__": true,
+    "__STAGING__": true,
+    "__PRELOADED_STATE__": true,
+  }
+}
