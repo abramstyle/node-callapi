@@ -3,6 +3,7 @@ Making api call with node-fetch, with middleware.
 
 ---
 [![npm version](https://badge.fury.io/js/node-callapi.svg)](https://badge.fury.io/js/node-callapi)
+[![CircleCI](https://circleci.com/gh/abramstyle/node-callapi/tree/master.svg?style=svg)](https://circleci.com/gh/abramstyle/node-callapi/tree/master)
 
 # Basic usage
 ```js
