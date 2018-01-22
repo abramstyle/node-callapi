@@ -1,6 +1,9 @@
 # Node Call API
 Making api call with node-fetch, with middleware.
 
+---
+[![npm version](https://badge.fury.io/js/node-callapi.svg)](https://badge.fury.io/js/node-callapi)
+
 # Basic usage
 ```js
 const Caller = require('node-callapi');
