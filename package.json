@@ -7,13 +7,19 @@
   "author": "Abram.Zhao",
   "license": "MIT",
   "scripts": {
+    "lint": "eslint ./",
     "test": "jest"
   },
+  "pre-commit": [
+    "lint",
+    "test"
+  ],
   "dependencies": {
     "@abramstyle/utils": "^0.8.4",
     "form-data": "^2.3.1",
     "mime-types": "^2.1.17",
-    "node-fetch": "^1.7.3"
+    "node-fetch": "^1.7.3",
+    "pre-commit": "^1.2.2"
   },
   "devDependencies": {
     "babel-eslint": "^8.0.1",
