@@ -8,6 +8,7 @@ const {
 } = require('./libs/defaultMiddlewares');
 
 const methods = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE', 'HEAD', 'CONNECT']);
+const postMethods = new Set(['POST', 'PUT', 'PATCH']);
 // const supportedTypes = new Set('json', 'text');
 
 class APICall {
@@ -73,57 +74,66 @@ class APICall {
     return urlUtils.mergeQuerystring(url, options.query);
   }
 
-  serializeOptions(options) {
+  serializeOptions(options = {}) {
     const fetchOptions = {
       credentials: 'same-origin',
       middlewares: [...this.settings.middlewares],
       method: 'GET',
-      headers: {},
+      headers: {
+        Accept: 'application/json',
+      },
+      query: {},
       body: null,
     };
 
     // apply all fetch data to fetch options
-    if (objectUtils.isObject(options)) {
-      if (options.data) {
-        Object.assign(fetchOptions, {
-          body: options.data,
-        });
-      }
-
-      if (methods.has(options.method)) {
-        Object.assign(fetchOptions, {
-          method: options.method,
-        });
-      }
-
-      if (Array.isArray(options.middlewares)) {
-        fetchOptions.middlewares.push(...options.middlewares);
-      }
-
-      if (objectUtils.isObject(options.headers)) {
-        Object.assign(fetchOptions, {
-          headers: Object.assign(fetchOptions.headers, options.headers),
-        });
-      }
+    if (options.data) {
+      Object.assign(fetchOptions, {
+        body: options.data,
+      });
     }
 
-    if (fetchOptions.body instanceof FormData) {
+    if (options.query) {
       Object.assign(fetchOptions, {
-        headers: Object.assign(fetchOptions.headers, {
-          // json is first priority if server is support
-          accept: 'application/json',
-          'Content-Type': 'application/x-www-form-urlencoded',
-        }),
+        query: options.query,
       });
-    } else if (objectUtils.isObject(fetchOptions.body) || Array.isArray(fetchOptions.body) || stringUtils.isString(fetchOptions.body)) {
+    }
+
+    if (postMethods.has(options.method)) {
+      if (fetchOptions.body instanceof FormData) {
+        Object.assign(fetchOptions, {
+          headers: Object.assign(fetchOptions.headers, {
+          // json is first priority if server is support
+            'Content-Type': 'application/x-www-form-urlencoded',
+          }),
+        });
+      } else if (objectUtils.isObject(fetchOptions.body) || Array.isArray(fetchOptions.body) || stringUtils.isString(fetchOptions.body)) {
+        Object.assign(fetchOptions, {
+          headers: Object.assign(fetchOptions.headers, {
+          // json is first priority if server is support
+            'Content-Type': 'application/json',
+          }),
+        });
+        fetchOptions.body = JSON.stringify(fetchOptions.body);
+      }
+    } else if (objectUtils.isObject(fetchOptions.body) && !(fetchOptions.body instanceof FormData)) {
+      Object.assign(fetchOptions.query, fetchOptions.body);
+    }
+
+    if (methods.has(options.method)) {
       Object.assign(fetchOptions, {
-        headers: Object.assign(fetchOptions.headers, {
-          // json is first priority if server is support
-          accept: 'application/json',
-          'Content-Type': 'application/json',
-        }),
+        method: options.method,
       });
-      fetchOptions.body = JSON.stringify(fetchOptions.body);
+    }
+
+    if (Array.isArray(options.middlewares)) {
+      fetchOptions.middlewares.push(...options.middlewares);
+    }
+
+    if (objectUtils.isObject(options.headers)) {
+      Object.assign(fetchOptions, {
+        headers: Object.assign(fetchOptions.headers, options.headers),
+      });
     }
 
     fetchOptions.middlewares.push(resultFilter);

@@ -31,22 +31,48 @@ describe('serializeOptions', () => {
       credentials: 'same-origin',
       middlewares: [...apiCall.settings.middlewares, resultFilter],
       method: 'GET',
-      headers: {},
+      headers: {
+        Accept: 'application/json',
+      },
       body: null,
+      query: {},
     });
   });
+  test('if fetch data, but body is specified, then it should be convert to query', () => {
+    const apiCall = new APICall();
+    const objectOptions = {
+      data: {
+        from: 'Node',
+      },
+    };
+    const objectFetchOptions = apiCall.serializeOptions(objectOptions);
+    expect(objectFetchOptions).toEqual({
+      credentials: 'same-origin',
+      middlewares: [...apiCall.settings.middlewares, resultFilter],
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+      body: objectOptions.data,
+      query: objectOptions.data,
+    });
+  });
+
   test('if send data, fetchOptions will has it', () => {
     const apiCall = new APICall();
     const stringOptions = {
+      method: 'POST',
       data: 'data',
     };
     const objectOptions = {
+      method: 'POST',
       data: {
         from: 'Node',
       },
     };
     const formData = new FormData();
     const formDataOptions = {
+      method: 'POST',
       data: formData,
     };
 
@@ -56,32 +82,35 @@ describe('serializeOptions', () => {
     expect(stringFetchOptions).toEqual({
       credentials: 'same-origin',
       middlewares: [...apiCall.settings.middlewares, resultFilter],
-      method: 'GET',
+      method: 'POST',
       headers: {
-        accept: 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(stringOptions.data),
+      query: {},
     });
     expect(objectFetchOptions).toEqual({
       credentials: 'same-origin',
       middlewares: [...apiCall.settings.middlewares, resultFilter],
-      method: 'GET',
+      method: 'POST',
       headers: {
-        accept: 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(objectOptions.data),
+      query: {},
     });
     expect(formDataFetchOptions).toEqual({
       credentials: 'same-origin',
       middlewares: [...apiCall.settings.middlewares, resultFilter],
-      method: 'GET',
+      method: 'POST',
       headers: {
-        accept: 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: formDataOptions.data,
+      query: {},
     });
   });
 
@@ -95,8 +124,11 @@ describe('serializeOptions', () => {
       credentials: 'same-origin',
       middlewares: [...apiCall.settings.middlewares, resultFilter],
       method: 'PUT',
-      headers: {},
+      headers: {
+        Accept: 'application/json',
+      },
       body: null,
+      query: {},
     });
   });
   test('if middlewares is specified, it will apply to fetchOptions', () => {
@@ -110,26 +142,56 @@ describe('serializeOptions', () => {
       credentials: 'same-origin',
       middlewares: [...apiCall.settings.middlewares, ...options.middlewares, resultFilter],
       method: 'GET',
-      headers: {},
+      headers: {
+        Accept: 'application/json',
+      },
       body: null,
+      query: {},
     });
   });
   test('if headers is spefifid, it will apply to fetchOptions', () => {
     const apiCall = new APICall();
     const options = {
       headers: {
+        Accept: 'application/json',
         'x-as-from': 'node-call',
       },
     };
+    const overrideOptions = {
+      method: 'POST',
+      data: {
+        a: 1,
+      },
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/multi-part',
+      },
+    };
     const fetchOptions = apiCall.serializeOptions(options);
+    const overrideFetchOptions = apiCall.serializeOptions(overrideOptions);
     expect(fetchOptions).toEqual({
       credentials: 'same-origin',
       middlewares: [...apiCall.settings.middlewares, resultFilter],
       method: 'GET',
       headers: {
+        Accept: 'application/json',
         'x-as-from': 'node-call',
       },
       body: null,
+      query: {},
+    });
+    expect(overrideFetchOptions).toEqual({
+      credentials: 'same-origin',
+      middlewares: [...apiCall.settings.middlewares, resultFilter],
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/multi-part',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        a: 1,
+      }),
+      query: {},
     });
   });
 
@@ -138,6 +200,7 @@ describe('serializeOptions', () => {
     const stringOptions = {
       data: 'data',
       headers: {
+        Accept: 'application/json',
         'x-as-from': 'node-call',
       },
     };
@@ -148,11 +211,11 @@ describe('serializeOptions', () => {
       middlewares: [...apiCall.settings.middlewares, resultFilter],
       method: 'GET',
       headers: {
-        accept: 'application/json',
-        'Content-Type': 'application/json',
+        Accept: 'application/json',
         'x-as-from': 'node-call',
       },
-      body: JSON.stringify(stringOptions.data),
+      body: stringOptions.data,
+      query: {},
     });
   });
 });
