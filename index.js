@@ -112,7 +112,7 @@ class APICall {
         headers: Object.assign(fetchOptions.headers, {
           // json is first priority if server is support
           accept: 'application/json',
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/x-www-form-urlencoded',
         }),
       });
     } else if (objectUtils.isObject(fetchOptions.body) || Array.isArray(fetchOptions.body) || stringUtils.isString(fetchOptions.body)) {
