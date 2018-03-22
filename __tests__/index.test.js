@@ -85,9 +85,8 @@ describe('serializeOptions', () => {
       method: 'POST',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(stringOptions.data),
+      body: stringOptions.data,
       query: {},
     });
     expect(objectFetchOptions).toEqual({
@@ -154,7 +153,7 @@ describe('serializeOptions', () => {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Content-Length': 4,
       },
-      body: JSON.stringify(stringOptions.data),
+      body: stringOptions.data,
       query: {},
     });
     expect(objectFetchOptions).toEqual({

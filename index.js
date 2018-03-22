@@ -107,7 +107,7 @@ class APICall {
             'Content-Type': 'application/x-www-form-urlencoded',
           }),
         });
-      } else if (objectUtils.isObject(fetchOptions.body) || Array.isArray(fetchOptions.body) || stringUtils.isString(fetchOptions.body)) {
+      } else if (objectUtils.isObject(fetchOptions.body) || Array.isArray(fetchOptions.body)) {
         Object.assign(fetchOptions, {
           headers: Object.assign(fetchOptions.headers, {
           // json is first priority if server is support
