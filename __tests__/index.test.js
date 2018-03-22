@@ -114,6 +114,73 @@ describe('serializeOptions', () => {
     });
   });
 
+  test('if send data, and specified content-type headers, it will override default.', () => {
+    const apiCall = new APICall();
+    const stringOptions = {
+      method: 'POST',
+      data: 'data',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': 4,
+      },
+    };
+    const objectOptions = {
+      method: 'POST',
+      data: {
+        from: 'Node',
+      },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    };
+    const formData = new FormData();
+    const formDataOptions = {
+      method: 'POST',
+      data: formData,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    };
+
+    const stringFetchOptions = apiCall.serializeOptions(stringOptions);
+    const objectFetchOptions = apiCall.serializeOptions(objectOptions);
+    const formDataFetchOptions = apiCall.serializeOptions(formDataOptions);
+    expect(stringFetchOptions).toEqual({
+      credentials: 'same-origin',
+      middlewares: [...apiCall.settings.middlewares, resultFilter],
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': 4,
+      },
+      body: JSON.stringify(stringOptions.data),
+      query: {},
+    });
+    expect(objectFetchOptions).toEqual({
+      credentials: 'same-origin',
+      middlewares: [...apiCall.settings.middlewares, resultFilter],
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: JSON.stringify(objectOptions.data),
+      query: {},
+    });
+    expect(formDataFetchOptions).toEqual({
+      credentials: 'same-origin',
+      middlewares: [...apiCall.settings.middlewares, resultFilter],
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formDataOptions.data,
+      query: {},
+    });
+  });
+
   test('if spefifid method fetchOptions will has it', () => {
     const apiCall = new APICall();
     const options = {
