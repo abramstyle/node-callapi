@@ -2,6 +2,7 @@ const nock = require('nock');
 const FormData = require('form-data');
 const APICall = require('../index');
 const { resultFilter } = require('../libs/defaultMiddlewares');
+const FetchError = require('node-fetch/lib/fetch-error');
 
 afterEach(() => {
   nock.cleanAll();
@@ -34,6 +35,7 @@ describe('serializeOptions', () => {
       headers: {
         Accept: 'application/json',
       },
+      timeout: 0,
       body: null,
       query: {},
     });
@@ -53,6 +55,7 @@ describe('serializeOptions', () => {
       headers: {
         Accept: 'application/json',
       },
+      timeout: 0,
       body: objectOptions.data,
       query: objectOptions.data,
     });
@@ -86,6 +89,7 @@ describe('serializeOptions', () => {
       headers: {
         Accept: 'application/json',
       },
+      timeout: 0,
       body: stringOptions.data,
       query: {},
     });
@@ -97,6 +101,7 @@ describe('serializeOptions', () => {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
+      timeout: 0,
       body: JSON.stringify(objectOptions.data),
       query: {},
     });
@@ -108,6 +113,7 @@ describe('serializeOptions', () => {
         Accept: 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded',
       },
+      timeout: 0,
       body: formDataOptions.data,
       query: {},
     });
@@ -153,6 +159,7 @@ describe('serializeOptions', () => {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Content-Length': 4,
       },
+      timeout: 0,
       body: stringOptions.data,
       query: {},
     });
@@ -164,6 +171,7 @@ describe('serializeOptions', () => {
         Accept: 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded',
       },
+      timeout: 0,
       body: JSON.stringify(objectOptions.data),
       query: {},
     });
@@ -175,6 +183,7 @@ describe('serializeOptions', () => {
         Accept: 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded',
       },
+      timeout: 0,
       body: formDataOptions.data,
       query: {},
     });
@@ -193,6 +202,7 @@ describe('serializeOptions', () => {
       headers: {
         Accept: 'application/json',
       },
+      timeout: 0,
       body: null,
       query: {},
     });
@@ -211,6 +221,7 @@ describe('serializeOptions', () => {
       headers: {
         Accept: 'application/json',
       },
+      timeout: 0,
       body: null,
       query: {},
     });
@@ -243,6 +254,7 @@ describe('serializeOptions', () => {
         Accept: 'application/json',
         'x-as-from': 'node-call',
       },
+      timeout: 0,
       body: null,
       query: {},
     });
@@ -254,6 +266,7 @@ describe('serializeOptions', () => {
         'Content-Type': 'application/multi-part',
         Accept: 'application/json',
       },
+      timeout: 0,
       body: JSON.stringify({
         a: 1,
       }),
@@ -280,7 +293,27 @@ describe('serializeOptions', () => {
         Accept: 'application/json',
         'x-as-from': 'node-call',
       },
+      timeout: 0,
       body: stringOptions.data,
+      query: {},
+    });
+  });
+  test('if specified timeout options.', () => {
+    const apiCall = new APICall();
+    const timeoutOptions = {
+      timeout: 3000,
+    };
+
+    const timeoutFetchOptions = apiCall.serializeOptions(timeoutOptions);
+    expect(timeoutFetchOptions).toEqual({
+      credentials: 'same-origin',
+      middlewares: [...apiCall.settings.middlewares, resultFilter],
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+      timeout: 3000,
+      body: null,
       query: {},
     });
   });
@@ -320,6 +353,9 @@ describe('call API', () => {
       .reply(403, 'You have no Access')
       .get('/internal')
       .reply(500, 'Server Error')
+      .get('/delay3000')
+      .delay(3000)
+      .reply(200, 'delayed response')
       .post('/user')
       .reply(200, (uri, requestBody) => requestBody)
       .put('/user')
@@ -328,7 +364,7 @@ describe('call API', () => {
         body: requestBody,
       }));
 
-    expect.assertions(10);
+    expect.assertions(12);
     const author = await apiCall.call('http://api.callapi.com/author');
     expect(author).toEqual({
       author: 'Abram',
@@ -352,6 +388,15 @@ describe('call API', () => {
       expect(e.status).toBe(500);
       expect(e).toEqual(new Error('Internal Server Error'));
     }
+    try {
+      await apiCall.call('http://api.callapi.com/delay3000', {
+        timeout: 2000,
+      });
+    } catch (e) {
+      expect(e).toBeInstanceOf(FetchError);
+      expect(e.type).toBe('request-timeout');
+    }
+
     const response = await apiCall.call('http://api.callapi.com/user', {
       method: 'POST',
       data: {

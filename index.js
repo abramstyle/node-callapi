@@ -79,6 +79,7 @@ class APICall {
       credentials: 'same-origin',
       middlewares: [...this.settings.middlewares],
       method: 'GET',
+      timeout: 0,
       headers: {
         Accept: 'application/json',
       },
@@ -133,6 +134,12 @@ class APICall {
     if (objectUtils.isObject(options.headers)) {
       Object.assign(fetchOptions, {
         headers: Object.assign(fetchOptions.headers, options.headers),
+      });
+    }
+
+    if (typeof options.timeout === 'number') {
+      Object.assign(fetchOptions, {
+        timeout: options.timeout,
       });
     }
 
