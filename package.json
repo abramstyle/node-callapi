@@ -8,7 +8,9 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint ./",
-    "test": "jest"
+    "coverage": "yarn run test && yarn run append",
+    "test": "jest --coverage",
+    "append": "coveralls < coverage/lcov.info"
   },
   "pre-commit": [
     "lint",

@@ -4,10 +4,14 @@
 #
 version: 2
 jobs:
-  build:
+  test:
+    filters:
+      branches:
+        only:
+          - master
     docker:
       # specify the version you desire here
-      - image: circleci/node:7.10
+      - image: circleci/node:latest
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -34,4 +38,75 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
       # run tests!
-      - run: yarn test
+      - run: yarn run coverage
+  build:
+    filters:
+      branches:
+        only:
+          - master
+    docker:
+      # specify the version you desire here
+      - image: circleci/node:latest
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/mongo:3.4.4
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run: yarn install
+
+      # build packages
+      - run: yarn run build
+
+      - save_cache:
+          paths:
+            - dist
+            - node_modules
+          key: v1-build-{{ .Revision }}
+  deploy:
+    filters:
+      branches:
+        only:
+          - master
+    docker:
+      - image: circleci/node:latest
+    working_directory: ~/repo
+    steps:
+      - checkout
+
+      # use built result
+      - restore_cache:
+          keys:
+          - v1-build-{{ .Revision }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-build-
+
+      - run:
+          name: add npm token
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN" >> ~/.npmrc
+      - run:
+          name: publish
+          command: npm publish
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - test
+      - build:
+          requires:
+            - test
+      - deploy:
+          requires:
+            - build
