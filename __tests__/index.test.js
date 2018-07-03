@@ -111,7 +111,7 @@ describe('serializeOptions', () => {
       method: 'POST',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'multipart/form-data',
       },
       timeout: 0,
       body: formDataOptions.data,
@@ -125,7 +125,7 @@ describe('serializeOptions', () => {
       method: 'POST',
       data: 'data',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'multipart/form-data',
         'Content-Length': 4,
       },
     };
@@ -135,7 +135,7 @@ describe('serializeOptions', () => {
         from: 'Node',
       },
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'multipart/form-data',
       },
     };
     const formData = new FormData();
@@ -143,7 +143,7 @@ describe('serializeOptions', () => {
       method: 'POST',
       data: formData,
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'multipart/form-data',
       },
     };
 
@@ -156,7 +156,7 @@ describe('serializeOptions', () => {
       method: 'POST',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'multipart/form-data',
         'Content-Length': 4,
       },
       timeout: 0,
@@ -169,7 +169,7 @@ describe('serializeOptions', () => {
       method: 'POST',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'multipart/form-data',
       },
       timeout: 0,
       body: JSON.stringify(objectOptions.data),
@@ -181,7 +181,7 @@ describe('serializeOptions', () => {
       method: 'POST',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'multipart/form-data',
       },
       timeout: 0,
       body: formDataOptions.data,
